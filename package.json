@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@types/tmi.js": "^1.7.2",
+    "tmi.js": "^1.8.4"
   }
 }
