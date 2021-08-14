@@ -1,5 +1,5 @@
 import { Log } from "./Log";
-import { MongoClient } from "./MongoClient";
+import { MongoClient, MongoConfig } from "./MongoClient";
 import { TwitchClient } from "./TwitchClient";
 
 export class TwitchLogger {
@@ -11,7 +11,10 @@ export class TwitchLogger {
     constructor() {
         this.log = new Log();
         this.client = new TwitchClient(this.log, this.getClientOptions());
-        TwitchLogger.mongodb = new MongoClient(this.log, null); //TODO remove null config
+        TwitchLogger.mongodb = new MongoClient(this.log, {
+            channels: [ "sodapoppin" ],
+            dbURL: "mongodb://mongo:27017/db"
+        } as MongoConfig); //TODO remove null config
     }
 
     async start(): Promise<void> {

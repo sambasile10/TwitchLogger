@@ -8,23 +8,28 @@ export declare interface Message {
     message: string
 }
 
+export declare interface MongoConfig {
+    channels: string[]
+    dbURL: string
+}
+
 export class MongoClient {
 
-    protected schema = new Schema<Message>({
+    protected MessageSchema = new Schema<Message>({
         username: { type: String, required: true },
         timestamp: { type: Date, required: true },
         message: { type: String, required: true }
     });
     
-    protected MessageModel = model<Message>('Message', this.schema);
+    protected MessageModel = mongoose.model<Message>('message', this.MessageSchema, 'sodapoppin');
 
-    private CONNECTION_URL: string;
+    private config: MongoConfig;
     private log: Log;
     private dbCount: number = 0;
 
-    constructor(log: Log, config: any) {
+    constructor(log: Log, config: MongoConfig) {
         this.log = log;
-        this.CONNECTION_URL = "mongodb://mongo:27017/db";
+        this.config = config;
     }
 
     public async writeMessage(message: Message): Promise<void> {
@@ -37,18 +42,25 @@ export class MongoClient {
         await messageDocument.save();
         this.dbCount++;
         this.log.trace("Wrote message document!");
+
+        if(this.dbCount % 10 == 0) {
+            let result: Message[] = await this.getByUsername("afnos_");
+            result.forEach((element) => {
+                this.log.debug("[" + element.timestamp + "] <" + element.username + "> " + element.message);
+            })
+        }
     }
 
     public async start(): Promise<void> {
-        this.log.info("Using MongoDB at: " + this.CONNECTION_URL);
+        this.log.info("Using MongoDB at: " + this.config.dbURL);
         await this.connect();
 
         this.enableListeners();
     }
 
-    public getAll(): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            const query = this.MessageModel.find({})
+    public getAll(): Promise<Message[]> {
+        return new Promise<Message[]>((resolve, reject) => {
+            const query = mongoose.model('message').find({})
             .limit(20).exec((err, res) => {
                 if(err) {
                     this.log.error("Error occured in the find all query. ");
@@ -56,14 +68,15 @@ export class MongoClient {
                     reject(err);
                 }
 
-                resolve(res);
+                let result: Message[] = JSON.parse(JSON.stringify(res));
+                resolve(result);
             });
         });
     }
 
     public getByUsername(queryUser: string): Promise<Message[]> {
         return new Promise<Message[]>((resolve, reject) => {
-            const query = this.MessageModel.find({ username: queryUser }).exec((err, res) => {
+            const query = mongoose.model('message').find({ username: queryUser }, "username timestamp message -_id").exec((err, res) => {
                 if(err) {
                     this.log.error("Error occured while querying by username: " + queryUser);
                     this.log.error(JSON.stringify(err));
@@ -71,7 +84,9 @@ export class MongoClient {
                 }
 
                 this.log.debug("Found " + res.length + " messages for user: \'" + queryUser + "\'");
-                resolve(res);
+
+                let result: Message[] = JSON.parse(JSON.stringify(res));
+                resolve(result);
             }); 
         });
     }
@@ -79,7 +94,7 @@ export class MongoClient {
     private connect(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.log.debug("Establishing connection to database");
-            mongoose.connect(this.CONNECTION_URL, {
+            mongoose.connect(this.config.dbURL, {
                 useNewUrlParser: true, //TODO config mongo
                 useUnifiedTopology: true
             }).then((res) => {
