@@ -8,23 +8,15 @@ export class TwitchClient {
     private client: tmi.Client;
     private clientOptions: tmi.Options;
 
-    constructor(log: Log, clientOptions: tmi.Options) {
+    constructor(log: Log, clientOptions: any) {
         this.log = log;
         this.clientOptions = clientOptions;
 
         this.log.debug("Using TMI Client options: " + clientOptions);
-        this.client = new tmi.Client(
-            clientOptions
-            /*options: { debug: true },
-            connection: {
-                secure: true,
-                reconnect: true
-            },
-            channels: [ "sodapoppin" ]*/
-        );
+        this.client = new tmi.Client(clientOptions as tmi.Options);
     }
 
-    protected async start(): Promise<void> {
+    async start(): Promise<void> {
         this.log.info("Starting TMI client...");
         await this.connect();
 
@@ -48,7 +40,7 @@ export class TwitchClient {
         this.client.on("chat", (channel, userstate, message, self) => {
             if(self) { return; }
 
-            //const username: string = userstate['display-name'];
+            this.log.info("[" + userstate['display-name'] + "] " + message);
         });
     }
 }

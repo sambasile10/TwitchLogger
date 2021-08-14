@@ -12,7 +12,7 @@ export class MongoClient {
         this.CONNECTION_URL = "placeholder";
     }
 
-    protected async start(): Promise<void> {
+    async start(): Promise<void> {
         this.log.info("Using MongoDB at: " + this.CONNECTION_URL);
         await this.connect();
 
@@ -37,7 +37,7 @@ export class MongoClient {
 
     private enableListeners(): void {
         this.log.debug("Enabling mongoose listeners...");
-        
+
         mongoose.connection.on("connected", () => {
             this.log.trace("Mongoose connected event fired.");
         });
