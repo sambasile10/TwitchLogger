@@ -1,0 +1,7 @@
+services:
+  twitchlogger:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      TIME_ZONE: Mountain/US

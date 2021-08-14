@@ -12,8 +12,10 @@ export class TwitchClient {
         this.log = log;
         this.clientOptions = clientOptions;
 
-        this.log.debug("Using TMI Client options: " + clientOptions);
+        this.log.debug("Using TMI Client options: " + JSON.stringify(clientOptions));
         this.client = new tmi.Client(clientOptions as tmi.Options);
+
+        this.client
     }
 
     async start(): Promise<void> {
@@ -40,7 +42,7 @@ export class TwitchClient {
         this.client.on("chat", (channel, userstate, message, self) => {
             if(self) { return; }
 
-            this.log.info("[" + userstate['display-name'] + "] " + message);
+            //console.log("[" + userstate['display-name'] + "] " + message);
         });
     }
 }

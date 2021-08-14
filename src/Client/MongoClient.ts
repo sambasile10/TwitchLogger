@@ -1,5 +1,12 @@
 import * as mongoose from "mongoose"
+import { Document, Model, model, Types, Schema, Query } from "mongoose";
 import { Log } from "./Log";
+
+export interface Message {
+    username: string,
+    timestamp: Date,
+    message: string
+}
 
 export class MongoClient {
 
