@@ -33,13 +33,12 @@ export class MongoClient {
     }
 
     public async writeMessage(message: Message): Promise<void> {
-        const messageDocument = new this.MessageModel({
+        await mongoose.model('message').create({
             username: message.username,
             timestamp: message.timestamp,
             message: message.message
         });
 
-        await messageDocument.save();
         this.dbCount++;
         this.log.trace("Wrote message document!");
 
