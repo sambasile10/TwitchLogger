@@ -10,8 +10,6 @@ export class TwitchClient {
     private client: tmi.Client;
     private clientOptions: tmi.Options;
 
-    private messageCount: number = 0;
-
     constructor(log: Log, clientOptions: any) {
         this.log = log;
         this.clientOptions = clientOptions;
@@ -53,8 +51,6 @@ export class TwitchClient {
             };
 
             TwitchLogger.mongodb.writeMessage(messageObject as Message);
-            
-            //console.log("[" + userstate['display-name'] + "] " + message);
         });
     }
 }

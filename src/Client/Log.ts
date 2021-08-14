@@ -1,11 +1,12 @@
-import { Logger } from "tslog"
+import { Logger, TLogLevelName } from "tslog"
 
 export class Log {
 
     private log: Logger;
 
     constructor() {
-        this.log = new Logger({ name: "TwitchLog" } );
+        //console.log(process.env.TWITCH_LOG_LEVEL);
+        this.log = new Logger({ name: "TwitchLog", minLevel: "debug" } );
     }
 
     trace(msg: string): void {

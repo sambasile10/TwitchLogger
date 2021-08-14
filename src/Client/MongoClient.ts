@@ -20,10 +20,11 @@ export class MongoClient {
 
     private CONNECTION_URL: string;
     private log: Log;
+    private dbCount: number = 0;
 
     constructor(log: Log, config: any) {
         this.log = log;
-        this.CONNECTION_URL = "mongodb://mongodb:27017/test";
+        this.CONNECTION_URL = "mongodb://mongo:27017/db";
     }
 
     public async writeMessage(message: Message): Promise<void> {
@@ -34,7 +35,8 @@ export class MongoClient {
         });
 
         await messageDocument.save();
-        this.log.debug("Wrote message document!");
+        this.dbCount++;
+        this.log.trace("Wrote message document!");
     }
 
     public async start(): Promise<void> {
@@ -44,7 +46,7 @@ export class MongoClient {
         this.enableListeners();
     }
 
-    public printAll(): Promise<any> {
+    public getAll(): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             const query = this.MessageModel.find({})
             .limit(20).exec((err, res) => {
@@ -54,9 +56,23 @@ export class MongoClient {
                     reject(err);
                 }
 
-                this.log.info(JSON.stringify(res));
                 resolve(res);
             });
+        });
+    }
+
+    public getByUsername(queryUser: string): Promise<Message[]> {
+        return new Promise<Message[]>((resolve, reject) => {
+            const query = this.MessageModel.find({ username: queryUser }).exec((err, res) => {
+                if(err) {
+                    this.log.error("Error occured while querying by username: " + queryUser);
+                    this.log.error(JSON.stringify(err));
+                    reject(err);
+                }
+
+                this.log.debug("Found " + res.length + " messages for user: \'" + queryUser + "\'");
+                resolve(res);
+            }); 
         });
     }
 
