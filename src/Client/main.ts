@@ -2,23 +2,23 @@ import { Log } from "./Log";
 import { MongoClient } from "./MongoClient";
 import { TwitchClient } from "./TwitchClient";
 
-class TwitchLogger {
+export class TwitchLogger {
 
     private client: TwitchClient;
-    private mongodb: MongoClient;
+    public static mongodb: MongoClient;
     private log: Log;
 
     constructor() {
         this.log = new Log();
         this.client = new TwitchClient(this.log, this.getClientOptions());
-        this.mongodb = new MongoClient(this.log, null); //TODO remove null config
+        TwitchLogger.mongodb = new MongoClient(this.log, null); //TODO remove null config
     }
 
     async start(): Promise<void> {
         this.log.info("Starting TwitchLogger");
         
+        await TwitchLogger.mongodb.start();
         await this.client.start();
-        await this.mongodb.start();
     };
 
     //TODO read client options from file
@@ -36,18 +36,6 @@ class TwitchLogger {
 }
 
 //code execution starts here
-//let logger: TwitchLogger = new TwitchLogger();
-//logger.start();
+let logger: TwitchLogger = new TwitchLogger();
+logger.start();
 
-const clientOptions = {
-    options: { debug: true },
-    connection: {
-        secure: true,
-        reconnect: true
-    },
-    channels: [ "sodapoppin" ]
-};
-
-let log: Log = new Log();
-let client: TwitchClient = new TwitchClient(log, clientOptions);
-client.start();

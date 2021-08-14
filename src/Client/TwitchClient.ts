@@ -1,5 +1,7 @@
 import * as tmi from 'tmi.js'
 import { Log } from './Log';
+import { TwitchLogger } from './main';
+import { Message } from './MongoClient';
 
 export class TwitchClient {
 
@@ -7,6 +9,8 @@ export class TwitchClient {
 
     private client: tmi.Client;
     private clientOptions: tmi.Options;
+
+    private messageCount: number = 0;
 
     constructor(log: Log, clientOptions: any) {
         this.log = log;
@@ -31,7 +35,7 @@ export class TwitchClient {
                 this.log.info("TMI client successfully connected.");
                 resolve();
             }).catch((err) => {
-                this.log.fatal("TMI client failed to connect." + err);
+                this.log.fatal("TMI client failed to connect. " + err);
                 reject(err);
             });
         });
@@ -42,6 +46,14 @@ export class TwitchClient {
         this.client.on("chat", (channel, userstate, message, self) => {
             if(self) { return; }
 
+            const messageObject = {
+                username: userstate['display-name'] as string,
+                timestamp: new Date(),
+                message: message
+            };
+
+            TwitchLogger.mongodb.writeMessage(messageObject as Message);
+            
             //console.log("[" + userstate['display-name'] + "] " + message);
         });
     }

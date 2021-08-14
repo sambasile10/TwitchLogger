@@ -1,8 +1,8 @@
-import * as mongoose from "mongoose"
+import mongoose from "mongoose"
 import { Document, Model, model, Types, Schema, Query } from "mongoose";
 import { Log } from "./Log";
 
-export interface Message {
+export declare interface Message {
     username: string,
     timestamp: Date,
     message: string
@@ -10,20 +10,54 @@ export interface Message {
 
 export class MongoClient {
 
-    private CONNECTION_URL: string;
+    protected schema = new Schema<Message>({
+        username: { type: String, required: true },
+        timestamp: { type: Date, required: true },
+        message: { type: String, required: true }
+    });
+    
+    protected MessageModel = model<Message>('Message', this.schema);
 
+    private CONNECTION_URL: string;
     private log: Log;
 
     constructor(log: Log, config: any) {
         this.log = log;
-        this.CONNECTION_URL = "placeholder";
+        this.CONNECTION_URL = "mongodb://mongodb:27017/test";
     }
 
-    async start(): Promise<void> {
+    public async writeMessage(message: Message): Promise<void> {
+        const messageDocument = new this.MessageModel({
+            username: message.username,
+            timestamp: message.timestamp,
+            message: message.message
+        });
+
+        await messageDocument.save();
+        this.log.debug("Wrote message document!");
+    }
+
+    public async start(): Promise<void> {
         this.log.info("Using MongoDB at: " + this.CONNECTION_URL);
         await this.connect();
 
         this.enableListeners();
+    }
+
+    public printAll(): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            const query = this.MessageModel.find({})
+            .limit(20).exec((err, res) => {
+                if(err) {
+                    this.log.error("Error occured in the find all query. ");
+                    this.log.error(JSON.stringify(err));
+                    reject(err);
+                }
+
+                this.log.info(JSON.stringify(res));
+                resolve(res);
+            });
+        });
     }
 
     private connect(): Promise<void> {
@@ -43,8 +77,6 @@ export class MongoClient {
     }
 
     private enableListeners(): void {
-        this.log.debug("Enabling mongoose listeners...");
-
         mongoose.connection.on("connected", () => {
             this.log.trace("Mongoose connected event fired.");
         });
@@ -60,6 +92,8 @@ export class MongoClient {
         mongoose.connection.on("disconnected", () => {
             this.log.trace("Mongoose disconnected event fired.");
         });
+
+        this.log.debug("Enabled mongoose listeners.");
     }
 }
 
