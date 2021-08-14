@@ -50,7 +50,7 @@ export class TwitchClient {
                 message: message
             };
 
-            TwitchLogger.mongodb.writeMessage(messageObject as Message);
+            TwitchLogger.mongodb.writeMessage(channel, messageObject as Message);
         });
     }
 }

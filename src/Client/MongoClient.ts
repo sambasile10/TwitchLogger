@@ -32,8 +32,8 @@ export class MongoClient {
         this.config = config;
     }
 
-    public async writeMessage(message: Message): Promise<void> {
-        await mongoose.model('message').create({
+    public async writeMessage(channel: string, message: Message): Promise<void> {
+        await mongoose.model(channel.toLowerCase()).create({
             username: message.username,
             timestamp: message.timestamp,
             message: message.message
@@ -43,7 +43,7 @@ export class MongoClient {
         this.log.trace("Wrote message document!");
 
         if(this.dbCount % 10 == 0) {
-            let result: Message[] = await this.getByUsername("afnos_");
+            let result: Message[] = await this.getByUsername("#sodapoppin", "afnos_");
             result.forEach((element) => {
                 this.log.debug("[" + element.timestamp + "] <" + element.username + "> " + element.message);
             })
@@ -53,13 +53,14 @@ export class MongoClient {
     public async start(): Promise<void> {
         this.log.info("Using MongoDB at: " + this.config.dbURL);
         await this.connect();
+        await this.buildModels();
 
         this.enableListeners();
     }
 
-    public getAll(): Promise<Message[]> {
+    public getAll(channel: string): Promise<Message[]> {
         return new Promise<Message[]>((resolve, reject) => {
-            const query = mongoose.model('message').find({})
+            const query = mongoose.model(channel.toLowerCase()).find({})
             .limit(20).exec((err, res) => {
                 if(err) {
                     this.log.error("Error occured in the find all query. ");
@@ -73,9 +74,9 @@ export class MongoClient {
         });
     }
 
-    public getByUsername(queryUser: string): Promise<Message[]> {
+    public getByUsername(channel: string, queryUser: string): Promise<Message[]> {
         return new Promise<Message[]>((resolve, reject) => {
-            const query = mongoose.model('message').find({ username: queryUser }, "username timestamp message -_id").exec((err, res) => {
+            const query = mongoose.model(channel.toLowerCase()).find({ username: queryUser }, "username timestamp message -_id").exec((err, res) => {
                 if(err) {
                     this.log.error("Error occured while querying by username: " + queryUser);
                     this.log.error(JSON.stringify(err));
@@ -124,6 +125,18 @@ export class MongoClient {
         });
 
         this.log.debug("Enabled mongoose listeners.");
+    }
+
+    private buildModels(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.config.channels.forEach((channel) => {
+                const chnName = channel.toLowerCase();
+                this.log.debug("Building mode for: \'" + chnName + "\'.");
+                let model = mongoose.model(chnName, this.MessageSchema);
+            });
+
+            resolve();
+        });
     }
 }
 

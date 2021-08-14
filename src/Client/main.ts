@@ -8,11 +8,14 @@ export class TwitchLogger {
     public static mongodb: MongoClient;
     private log: Log;
 
+    private clientOptions: any;
+
     constructor() {
         this.log = new Log();
-        this.client = new TwitchClient(this.log, this.getClientOptions());
+        this.clientOptions = this.getClientOptions();
+        this.client = new TwitchClient(this.log, this.clientOptions);
         TwitchLogger.mongodb = new MongoClient(this.log, {
-            channels: [ "sodapoppin" ],
+            channels: this.clientOptions.channels,
             dbURL: "mongodb://mongo:27017/db"
         } as MongoConfig); //TODO remove null config
     }
@@ -32,7 +35,7 @@ export class TwitchLogger {
                 secure: true,
                 reconnect: true
             },
-            channels: [ "sodapoppin" ]
+            channels: [ "sodapoppin", "Silvervale" ]
         });
     }
 
