@@ -13,6 +13,12 @@ export declare interface MongoConfig {
     dbURL: string
 }
 
+export declare interface QueryParams {
+    channel: string, //required channel
+    username?: string, //optional username
+    regex?: string, //optional regex filter
+}
+
 export class MongoClient {
 
     protected MessageSchema = new Schema<Message>({
@@ -43,7 +49,13 @@ export class MongoClient {
         this.log.trace("Wrote message document!");
 
         if(this.dbCount % 10 == 0) {
-            let result: Message[] = await this.getByUsername("#sodapoppin", "afnos_");
+            let params: QueryParams = {
+                channel: "#sodapoppin",
+                username: "afnos_",
+                regex: "nyan"
+            };
+
+            let result: Message[] = await this.query(params);
             result.forEach((element) => {
                 this.log.debug("[" + element.timestamp + "] <" + element.username + "> " + element.message);
             })
@@ -56,6 +68,29 @@ export class MongoClient {
         await this.buildModels();
 
         this.enableListeners();
+    }
+
+    public query(params: QueryParams): Promise<Message[]> {
+        return new Promise<Message[]>((resolve, reject) => {
+            let query = mongoose.model(params.channel.toLowerCase()).find();
+            if(params.username) {
+                query.where("username", params.username);
+            }
+
+            if(params.regex) {
+                query.where("message", { "$regex": params.regex });
+            }
+
+            let result: Message[] = [];
+            query.exec().then((res) => {
+                result = JSON.parse(JSON.stringify(res));
+                this.log.debug("Found " + result.length + " results matching query");
+                resolve(result);
+            }).catch((err) => {
+                this.log.error("Error occured for query. " + err);
+                resolve(result);
+            });
+        });
     }
 
     public getAll(channel: string): Promise<Message[]> {

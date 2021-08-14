@@ -17,7 +17,7 @@ export class TwitchLogger {
         TwitchLogger.mongodb = new MongoClient(this.log, {
             channels: this.clientOptions.channels,
             dbURL: "mongodb://mongo:27017/db"
-        } as MongoConfig); //TODO remove null config
+        } as MongoConfig); 
     }
 
     async start(): Promise<void> {
