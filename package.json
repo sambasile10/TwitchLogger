@@ -5,6 +5,7 @@
   "dependencies": {
     "@types/tmi.js": "^1.7.2",
     "mongoose": "^5.13.7",
-    "tmi.js": "^1.8.4"
+    "tmi.js": "^1.8.4",
+    "tslog": "^3.2.0"
   }
 }

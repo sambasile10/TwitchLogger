@@ -1,39 +1,50 @@
 import * as tmi from 'tmi.js'
+import { Log } from './Log';
 
 export class TwitchClient {
 
-    private client: tmi.Client;
-    private channelList: string[];
+    private log: Log;
 
-    constructor(channelList: string[]) {
-        this.channelList = channelList;
-        this.client = new tmi.Client({
-            options: { debug: true },
+    private client: tmi.Client;
+    private clientOptions: tmi.Options;
+
+    constructor(log: Log, clientOptions: tmi.Options) {
+        this.log = log;
+        this.clientOptions = clientOptions;
+
+        this.log.debug("Using TMI Client options: " + clientOptions);
+        this.client = new tmi.Client(
+            clientOptions
+            /*options: { debug: true },
             connection: {
                 secure: true,
                 reconnect: true
             },
-            //TODO identity
-            channels: channelList
-        });
+            channels: [ "sodapoppin" ]*/
+        );
     }
 
     protected async start(): Promise<void> {
+        this.log.info("Starting TMI client...");
         await this.connect();
+
         this.listen();
     }
 
     private connect(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.client.connect().then((res) => {
+                this.log.info("TMI client successfully connected.");
                 resolve();
             }).catch((err) => {
+                this.log.fatal("TMI client failed to connect." + err);
                 reject(err);
             });
         });
     }
 
     private listen(): void {
+        this.log.debug("Starting TMI client listeners.");
         this.client.on("chat", (channel, userstate, message, self) => {
             if(self) { return; }
 
