@@ -19,7 +19,8 @@ export class TwitchClient {
     }
 
     protected async start(): Promise<void> {
-        return await this.connect();
+        await this.connect();
+        this.listen();
     }
 
     private connect(): Promise<void> {
@@ -33,8 +34,10 @@ export class TwitchClient {
     }
 
     private listen(): void {
-        this.client.on("message", (channel, userstate, message, self) => {
+        this.client.on("chat", (channel, userstate, message, self) => {
             if(self) { return; }
+
+            //const username: string = userstate['display-name'];
         });
     }
 }
