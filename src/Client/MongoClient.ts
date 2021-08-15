@@ -22,8 +22,6 @@ export class MongoClient {
         timestamp: { type: Date, required: true },
         message: { type: String, required: true }
     });
-    
-    protected MessageModel = mongoose.model<Message>('message', this.MessageSchema, 'sodapoppin');
 
     private config: Configuration;
     private log: Log;
@@ -142,11 +140,31 @@ export class MongoClient {
         });
     }
 
-    getStatus(): any {
-        return {
-            collections: this.config.channels,
-            count: this.dbCount
-        };
+    getStatus(): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            let blob = {
+                collections: this.config.channels,
+                sessionCount: this.dbCount,
+                data: [] as any[]
+            };
+
+            this.config.channels.forEach(async (channel, index, array) => {
+                /*mongoose.model(channel).collection.stats().then((res) => {
+                    blob.data[channel] = res as any;
+                }).catch((err) => {
+                    blob.data[channel] = err;
+                });*/
+
+                let stats = await mongoose.model(channel).collection.stats();
+                blob.data.push({
+                    channel: channel,
+                    count: stats.count,
+                    size: stats.storageSize
+                });
+
+                if(index == array.length - 1) resolve(blob);
+            });
+        });
     }
 }
 

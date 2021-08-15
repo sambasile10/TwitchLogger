@@ -1,5 +1,5 @@
 import express from "express"
-import { Server, Path, GET, PathParam, QueryParam, Return, Errors } from "typescript-rest"
+import { Server, Path, GET, PathParam, QueryParam, Return, Errors, PUT } from "typescript-rest"
 import { QueryParams, TwitchLogger } from "../Client";
 import * as dotenv from "dotenv"
 
@@ -37,6 +37,15 @@ class ChatService {
             }).catch((err) => {
                 resolve(new Errors.BadRequestError(err as string));
             })
+        });
+    }
+
+    //Add a channel to the database list
+    @Path("/:channel")
+    @PUT
+    addChannel(@QueryParam("channel") channel: string) {
+        return new Promise<any>((resolve, reject) => {
+            
         });
     }
 }

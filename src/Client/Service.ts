@@ -44,10 +44,10 @@ export class TwitchLogger {
 
     //Return server status blob
     status(): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<any>(async (resolve, reject) => {
             resolve({
                 client: this.client().getStatus(),
-                db: this.mongo().getStatus()
+                db: await this.mongo().getStatus()
             });
         });
     }
