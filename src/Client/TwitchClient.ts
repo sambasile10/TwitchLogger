@@ -19,6 +19,7 @@ export class TwitchClient {
         this.client = new tmi.Client(clientOptions as tmi.Options);
     }
 
+    //Starts the twitch client
     async start(): Promise<void> {
         this.log.info("Starting TMI client...");
         await this.connect();
@@ -26,6 +27,7 @@ export class TwitchClient {
         this.listen();
     }
 
+    //Connect to the Twitch IRC service
     private connect(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.client.connect().then((res) => {
@@ -38,6 +40,7 @@ export class TwitchClient {
         });
     }
 
+    //Starts TMI listeners
     private listen(): void {
         this.log.debug("Starting TMI client listeners.");
         this.client.on("chat", (channel, userstate, message, self) => {

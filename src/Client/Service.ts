@@ -5,7 +5,7 @@ import { TwitchClient } from "./TwitchClient";
 
 export class TwitchLogger {
 
-    private client: TwitchClient;
+    private _client: TwitchClient;
     private mongodb: MongoClient;
     private log: Log;
 
@@ -14,7 +14,7 @@ export class TwitchLogger {
     constructor() {
         this.log = new Log();
         this.clientOptions = this.getClientOptions();
-        this.client = new TwitchClient(this.log, this.clientOptions);
+        this._client = new TwitchClient(this.log, this.clientOptions);
         this.mongodb = new MongoClient(this.log, {
             channels: this.clientOptions.channels,
             dbURL: "mongodb://mongo:27017/db"
@@ -25,15 +25,15 @@ export class TwitchLogger {
         this.log.info("Starting TwitchLogger");
         
         await this.mongodb.start();
-        await this.client.start();
+        await this._client.start();
     };
-
-    public async query(params: QueryParams): Promise<Message[]> {
-        return await this.mongodb.query(params);
-    }
 
     mongo(): MongoClient {
         return this.mongodb;
+    }
+
+    client(): TwitchClient {
+        return this._client;
     }
 
     //TODO read client options from file

@@ -25,7 +25,7 @@ class ChatService {
                 params["regex"] = regex;
             }
     
-            _TwitchLogger.query(params).then((res) => {
+            _TwitchLogger.mongo().query(params).then((res) => {
                 resolve(JSON.stringify(res));
             }).catch((err) => {
                 resolve("error: " + JSON.stringify(err));
@@ -37,11 +37,12 @@ class ChatService {
 //Start dotenv
 dotenv.config();
 
-//code execution starts here
+//Start the logging service
 let _TwitchLogger: TwitchLogger = new TwitchLogger();
 _TwitchLogger.start();
 export { _TwitchLogger };
 
+//Start typescript-rest and express
 const port = Number(process.env.PORT || 8080);
 let app: express.Application = express();
 Server.buildServices(app);
