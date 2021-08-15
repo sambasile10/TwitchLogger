@@ -1,16 +1,12 @@
 import mongoose from "mongoose"
 import { Document, Model, model, Types, Schema, Query } from "mongoose";
 import { Log } from "./Log";
+import { Configuration } from "./Service";
 
 export declare interface Message {
     username: string,
     timestamp: Date,
     message: string
-}
-
-export declare interface MongoConfig {
-    channels: string[]
-    dbURL: string
 }
 
 export declare interface QueryParams {
@@ -29,11 +25,11 @@ export class MongoClient {
     
     protected MessageModel = mongoose.model<Message>('message', this.MessageSchema, 'sodapoppin');
 
-    private config: MongoConfig;
+    private config: Configuration;
     private log: Log;
     private dbCount: number = 0;
 
-    constructor(log: Log, config: MongoConfig) {
+    constructor(log: Log, config: Configuration) {
         this.log = log;
         this.config = config;
     }
@@ -144,6 +140,13 @@ export class MongoClient {
 
             resolve();
         });
+    }
+
+    getStatus(): any {
+        return {
+            collections: this.config.channels,
+            count: this.dbCount
+        };
     }
 }
 

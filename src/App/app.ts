@@ -34,6 +34,37 @@ class ChatService {
     }
 }
 
+@Path("/service")
+class StatusService {
+    @Path("/status/")
+    @GET
+    async getServiceStatus() {
+        return await this.getStatus();
+    }
+
+    private async getStatus(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            _TwitchLogger.status().then((res) => {
+                resolve(JSON.stringify(res));
+            }).catch((err) => {
+                resolve(JSON.stringify(err));
+            })
+        });
+    }
+
+    @Path("/config/")
+    @GET
+    async getServiceConfig() {
+        return await this.getConfig();
+    }
+
+    private async getConfig(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            resolve(JSON.stringify(_TwitchLogger.config()));
+        });
+    }
+}
+
 //Start dotenv
 dotenv.config();
 

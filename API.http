@@ -1,5 +1,11 @@
-###
+### Get user's messages in a channel
+GET http://localhost:8080/chat/veibae?username=afnos_
+
+###  Get user's messages filtered by a regex
 GET http://localhost:8080/chat/sodapoppin?username=afnos_&regex=nyan
 
-### 
-GET http://localhost:8080/chat/sodapoppin?username=afnos_
+### Get server status
+GET http://localhost:8080/service/status
+
+### Get configuration
+GET http://localhost:8080/service/config

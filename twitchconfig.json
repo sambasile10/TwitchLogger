@@ -1,0 +1,5 @@
+{
+    "debug": true,
+    "channels": [ "sodapoppin", "veibae" ],
+    "dbURL": "mongodb://mongo:27017/db"
+}
