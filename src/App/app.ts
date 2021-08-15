@@ -10,10 +10,7 @@ class ChatService {
     async getChatHistory(@PathParam("channel") channel: string, 
         @QueryParam("username") username: string, 
             @QueryParam("regex") regex?: string) {
-
-        let result: string = await this.queryChatHistory(channel, username, regex);
-        console.log("result: " + result);
-        return result;
+        return await this.queryChatHistory(channel, username, regex);
     }
 
     private async queryChatHistory(channel: string, username: string, regex?: string): Promise<string> {
@@ -29,7 +26,6 @@ class ChatService {
             }
     
             _TwitchLogger.query(params).then((res) => {
-                console.log("returned: " + JSON.stringify(res));
                 resolve(JSON.stringify(res));
             }).catch((err) => {
                 resolve("error: " + JSON.stringify(err));

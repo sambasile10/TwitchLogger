@@ -47,19 +47,6 @@ export class MongoClient {
 
         this.dbCount++;
         this.log.trace("Wrote message document!");
-
-        if(this.dbCount % 100 == 0) {
-            let params: QueryParams = {
-                channel: "#sodapoppin",
-                username: "afnos_",
-                regex: "nyan"
-            };
-
-            let result: Message[] = await this.query(params);
-            result.forEach((element) => {
-                this.log.debug("[" + element.timestamp + "] <" + element.username + "> " + element.message);
-            })
-        }
     }
 
     public async start(): Promise<void> {
@@ -73,6 +60,8 @@ export class MongoClient {
     public query(params: QueryParams): Promise<Message[]> {
         return new Promise<Message[]>((resolve, reject) => {
             let query = mongoose.model(params.channel.toLowerCase()).find();
+            query.select("username timestamp message -_id");
+
             if(params.username) {
                 query.where("username", params.username);
             }
@@ -106,23 +95,6 @@ export class MongoClient {
                 let result: Message[] = JSON.parse(JSON.stringify(res));
                 resolve(result);
             });
-        });
-    }
-
-    public getByUsername(channel: string, queryUser: string): Promise<Message[]> {
-        return new Promise<Message[]>((resolve, reject) => {
-            const query = mongoose.model(channel.toLowerCase()).find({ username: queryUser }, "username timestamp message -_id").exec((err, res) => {
-                if(err) {
-                    this.log.error("Error occured while querying by username: " + queryUser);
-                    this.log.error(JSON.stringify(err));
-                    reject(err);
-                }
-
-                this.log.debug("Found " + res.length + " messages for user: \'" + queryUser + "\'");
-
-                let result: Message[] = JSON.parse(JSON.stringify(res));
-                resolve(result);
-            }); 
         });
     }
 
