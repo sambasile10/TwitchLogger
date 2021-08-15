@@ -33,7 +33,10 @@ class ChatService {
             }
     
             _TwitchLogger.mongo().query(params).then((res) => {
-                resolve(JSON.stringify(res));
+                res.forEach((v, idx, arr) => {
+                     delete v.username; 
+                     if(idx == arr.length - 1) resolve(JSON.stringify(res));
+                });
             }).catch((err) => {
                 resolve(new Errors.BadRequestError(err as string));
             })
@@ -45,7 +48,7 @@ class ChatService {
     @PUT
     addChannel(@QueryParam("channel") channel: string) {
         return new Promise<any>((resolve, reject) => {
-            
+
         });
     }
 }

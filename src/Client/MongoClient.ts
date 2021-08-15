@@ -4,7 +4,7 @@ import { Log } from "./Log";
 import { Configuration } from "./Service";
 
 export declare interface Message {
-    username: string,
+    username?: string,
     timestamp: Date,
     message: string
 }
@@ -149,12 +149,6 @@ export class MongoClient {
             };
 
             this.config.channels.forEach(async (channel, index, array) => {
-                /*mongoose.model(channel).collection.stats().then((res) => {
-                    blob.data[channel] = res as any;
-                }).catch((err) => {
-                    blob.data[channel] = err;
-                });*/
-
                 let stats = await mongoose.model(channel).collection.stats();
                 blob.data.push({
                     channel: channel,
