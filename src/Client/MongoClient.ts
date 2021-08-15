@@ -33,8 +33,6 @@ export class MongoClient {
     private log: Log;
     private dbCount: number = 0;
 
-    private messageLimit: number = 100;
-
     constructor(log: Log, config: MongoConfig) {
         this.log = log;
         this.config = config;
@@ -74,7 +72,7 @@ export class MongoClient {
 
     public query(params: QueryParams): Promise<Message[]> {
         return new Promise<Message[]>((resolve, reject) => {
-            let query = mongoose.model(params.channel.toLowerCase()).find().limit(this.messageLimit);
+            let query = mongoose.model(params.channel.toLowerCase()).find();
             if(params.username) {
                 query.where("username", params.username);
             }
