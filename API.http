@@ -9,3 +9,6 @@ GET http://localhost:8080/service/status
 
 ### Get configuration
 GET http://localhost:8080/service/config
+
+### Test bad request
+GET http://localhost:8080/chat/nyanners?username=afnos_

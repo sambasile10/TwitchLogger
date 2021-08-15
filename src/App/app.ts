@@ -1,5 +1,5 @@
 import express from "express"
-import { Server, Path, GET, PathParam, QueryParam } from "typescript-rest"
+import { Server, Path, GET, PathParam, QueryParam, Return, Errors } from "typescript-rest"
 import { QueryParams, TwitchLogger } from "../Client";
 import * as dotenv from "dotenv"
 
@@ -7,14 +7,21 @@ import * as dotenv from "dotenv"
 class ChatService {
     @Path("/:channel")
     @GET
-    async getChatHistory(@PathParam("channel") channel: string, 
+    getChatHistory(@PathParam("channel") channel: string, 
         @QueryParam("username") username: string, 
             @QueryParam("regex") regex?: string) {
-        return await this.queryChatHistory(channel, username, regex);
+        
+        return new Promise<any>((resolve, reject) => {
+            this.queryChatHistory(channel, username, regex).then((res) => {
+                resolve(res as string);
+            }).catch((err) => {
+                reject(new Errors.BadRequestError(err as string));
+            });
+        });
     }
 
-    private async queryChatHistory(channel: string, username: string, regex?: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
+    private async queryChatHistory(channel: string, username: string, regex?: string): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
             console.log("Querying chat | channel: " + channel + ", username: " + username + ", regex: " + regex);
             let params: QueryParams = {
                 channel: "#" + channel,
@@ -28,7 +35,7 @@ class ChatService {
             _TwitchLogger.mongo().query(params).then((res) => {
                 resolve(JSON.stringify(res));
             }).catch((err) => {
-                resolve("error: " + JSON.stringify(err));
+                resolve(new Errors.BadRequestError(err as string));
             })
         });
     }

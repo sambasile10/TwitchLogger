@@ -72,7 +72,7 @@ export class MongoClient {
                 this.log.debug("Found " + result.length + " results matching query");
                 resolve(result);
             }).catch((err) => {
-                this.log.error("Error occured for query. " + err);
+                this.log.error("Error occured for query. Is the channel monitored? Does the user not exist? " + JSON.stringify(err));
                 resolve(result);
             });
         });
