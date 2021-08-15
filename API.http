@@ -1,0 +1,1 @@
+GET http://localhost:8080/chat/sodapoppin?username=afnos_&regex=nyan

@@ -13,4 +13,5 @@ RUN npm install && npm install typescript -g
 ADD . /usr/src/app
 RUN npx tsc
 
-CMD [ "node", "src/Client/main.js" ]
+EXPOSE 8080
+CMD [ "node", "src/App/app.js" ]

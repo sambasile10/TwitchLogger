@@ -1,4 +1,5 @@
 import * as tmi from 'tmi.js'
+import { _TwitchLogger } from '../App/app';
 import { Log } from './Log';
 import { TwitchLogger } from './main';
 import { Message } from './MongoClient';
@@ -16,8 +17,6 @@ export class TwitchClient {
 
         this.log.debug("Using TMI Client options: " + JSON.stringify(clientOptions));
         this.client = new tmi.Client(clientOptions as tmi.Options);
-
-        this.client
     }
 
     async start(): Promise<void> {
@@ -50,7 +49,7 @@ export class TwitchClient {
                 message: message
             };
 
-            TwitchLogger.mongodb.writeMessage(channel, messageObject as Message);
+            _TwitchLogger.mongo().writeMessage(channel, messageObject as Message);
         });
     }
 }

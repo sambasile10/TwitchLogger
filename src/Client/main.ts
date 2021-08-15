@@ -32,10 +32,14 @@ export class TwitchLogger {
         return await this.mongodb.query(params);
     }
 
+    mongo(): MongoClient {
+        return this.mongodb;
+    }
+
     //TODO read client options from file
     private getClientOptions(): any {
         return ({
-            options: { debug: true },
+            options: { debug: false },
             connection: {
                 secure: true,
                 reconnect: true
@@ -45,10 +49,3 @@ export class TwitchLogger {
     }
 
 }
-
-//code execution starts here
-let _TwitchLogger: TwitchLogger = new TwitchLogger();
-_TwitchLogger.start();
-
-export { _TwitchLogger };
-

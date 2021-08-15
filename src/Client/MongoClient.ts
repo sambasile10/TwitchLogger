@@ -48,7 +48,7 @@ export class MongoClient {
         this.dbCount++;
         this.log.trace("Wrote message document!");
 
-        if(this.dbCount % 10 == 0) {
+        if(this.dbCount % 100 == 0) {
             let params: QueryParams = {
                 channel: "#sodapoppin",
                 username: "afnos_",

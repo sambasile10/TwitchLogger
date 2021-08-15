@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     environment:
       TIME_ZONE: Mountain/US
+    ports:
+      - 8080:8080
   mongodb:
     image: mongo
     container_name: mongo
