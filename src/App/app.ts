@@ -1,5 +1,5 @@
 import express from "express"
-import { Server, Path, GET, PathParam, QueryParam, Return, Errors, PUT } from "typescript-rest"
+import { Server, Path, GET, PathParam, QueryParam, Return, Errors, PUT, DELETE } from "typescript-rest"
 import { QueryParams, TwitchLogger } from "../Client";
 import * as dotenv from "dotenv"
 
@@ -46,11 +46,41 @@ class ChatService {
     //Add a channel to the database list
     @Path("/:channel")
     @PUT
-    addChannel(@QueryParam("channel") channel: string) {
+    addChannel(@PathParam("channel") channel: string) {
         return new Promise<any>((resolve, reject) => {
-            
+            channel = "#" + channel;
+            if(_TwitchLogger.config().channels.includes(channel)) {
+                //Channel already exists in config
+                reject(new Errors.BadRequestError("Channel \'" + channel + "\' already in configuration list."));
+            }
+
+            _TwitchLogger.addChannel(channel).then((res) => {
+                resolve("200");
+            }).catch((err) => {
+                reject(new Errors.InternalServerError("Error occured while adding new channel: " + JSON.stringify(err)));
+            });
         });
     }
+
+    //Drop a channel collection and remove it from the config
+    @Path("/:channel")
+    @DELETE
+    removeChannel(@PathParam("channel") channel: string) {
+        return new Promise<any>((resolve, reject) => {
+            channel = "#" + channel;
+            if(!_TwitchLogger.config().channels.includes(channel)) {
+                //Channel isn't in config list
+                reject(new Errors.BadRequestError("Channel \'" + channel + "\' not in configuration"));
+            }
+
+            _TwitchLogger.removeChannel(channel).then(() => {
+                resolve("200"); //why 200 
+            }).catch((err) => {
+                reject(new Errors.InternalServerError("Error occured while dropping collection: " + JSON.stringify(err)));
+            });
+        });
+    } 
+
 }
 
 @Path("/service")

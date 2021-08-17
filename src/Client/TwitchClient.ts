@@ -99,4 +99,28 @@ export class TwitchClient {
     getStatus(): TwitchClientStatusData {
         return this.status;
     }
+    
+    addChannel(channel: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.client.join(channel).then((res) => {
+                this.log.info("Joined channel: " + channel);
+                resolve();
+            }).catch((err) => {
+                this.log.error("Failed to join channel: " + JSON.stringify(err));
+                reject();
+            });
+        });
+    }
+
+    removeChannel(channel: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.client.part(channel).then((res) => {
+                this.log.info("Left channel: " + channel);
+                resolve();
+            }).catch((err) => {
+                this.log.error("Failed to leave channel: " + JSON.stringify(err));
+                reject();
+            });
+        });
+    }
 }

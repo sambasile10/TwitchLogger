@@ -12,3 +12,9 @@ GET http://localhost:8080/service/config
 
 ### Test bad request
 GET http://localhost:8080/chat/nyanners?username=afnos_
+
+### Test add channel
+PUT http://localhost:8080/chat/nyanners 
+
+### Test delete channel
+DELETE http://localhost:8080/chat/sodapoppin

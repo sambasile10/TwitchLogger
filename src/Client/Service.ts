@@ -77,4 +77,34 @@ export class TwitchLogger {
         return options;
     }
 
+    addChannel(channel: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            Promise.all([
+                this.client().addChannel(channel), this.mongo().addChannel(channel)
+            ]).then(() => {
+                twitchconfig.channels.push(channel);
+                this.log.info("Added channel: " + channel);
+                resolve();
+            }).catch((err) => {
+                this.log.warn("Failed to add channel: " + channel);
+                reject(err);
+            })
+        });
+    }
+
+    removeChannel(channel: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            Promise.all([
+                this.client().removeChannel(channel), this.mongo().removeChannel(channel)
+            ]).then(() => {
+                delete twitchconfig.channels[channel];
+                this.log.info("Dropped channel: " + channel);
+                resolve();
+            }).catch((err) => {
+                this.log.warn("Failed to drop channel: " + channel);
+                reject(err);
+            })
+        });
+    }
+
 }

@@ -132,7 +132,7 @@ export class MongoClient {
         return new Promise<void>((resolve, reject) => {
             this.config.channels.forEach((channel) => {
                 const chnName = channel.toLowerCase();
-                this.log.debug("Building mode for: \'" + chnName + "\'.");
+                this.log.debug("Building model for: \'" + chnName + "\'.");
                 let model = mongoose.model(chnName, this.MessageSchema);
             });
 
@@ -158,6 +158,27 @@ export class MongoClient {
 
                 if(index == array.length - 1) resolve(blob);
             });
+        });
+    }
+
+    addChannel(channel: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const chnName = channel.toLowerCase();
+            this.log.debug("Building model for: \'" + chnName + "\'.");
+            let model = mongoose.model(chnName, this.MessageSchema);
+            resolve();
+        });
+    }
+
+    removeChannel(channel: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            mongoose.model(channel).deleteMany({}).then((res) => {
+                this.log.warn("Deleted all entries of model: " + channel);
+                resolve();
+            }).catch((err) => {
+                this.log.error("Failed to delete entries of model: " + channel);
+                reject(err);
+            })
         });
     }
 }
