@@ -48,7 +48,7 @@ class ChatService {
     @PUT
     addChannel(@QueryParam("channel") channel: string) {
         return new Promise<any>((resolve, reject) => {
-
+            
         });
     }
 }
