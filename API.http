@@ -14,10 +14,10 @@ GET http://localhost:8080/service/config
 GET http://localhost:8080/chat/nyanners?username=afnos_
 
 ### Test add channel
-PUT http://localhost:8080/chat/nyanners 
+PUT http://localhost:8080/chat/ewica 
 
 ### Test delete channel
 DELETE http://localhost:8080/chat/sodapoppin
 
 ### Test limit and skip
-GET http://localhost:8080/chat/nyanners?username=afnos_&regex=nyan&limit=20&skip=0
+GET http://localhost:8080/chat/nyanners?username=afnos_&regex=vei&limit=2&skip=5
