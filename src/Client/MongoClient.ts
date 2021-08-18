@@ -181,6 +181,11 @@ export class MongoClient {
                 data: [] as any[]
             };
 
+            for(let i = 0; i < this.config.channels.length; i++) {
+
+            }
+
+            let requests: number = this.config.channels.length;
             this.config.channels.forEach(async (channel, index, array) => {
                 let stats = await mongoose.model(channel).collection.stats();
                 blob.data.push({
@@ -190,7 +195,8 @@ export class MongoClient {
                     average_document_size: Number(stats.storageSize / stats.count)
                 });
 
-                if(index == array.length - 1) resolve(blob);
+                requests--;
+                if(requests == 0) { resolve(blob); }
             });
         });
     }
@@ -204,6 +210,7 @@ export class MongoClient {
         });
     }
 
+    //TODO just drop the collection
     removeChannel(channel: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             mongoose.model(channel).deleteMany({}).then((res) => {
