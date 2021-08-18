@@ -10,6 +10,7 @@ export declare interface Configuration {
     debug: boolean,
     channels: string[],
     dbURL: string
+    maxQueryLimit: number
 };
 
 export class TwitchLogger {

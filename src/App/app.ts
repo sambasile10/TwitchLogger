@@ -7,12 +7,11 @@ import * as dotenv from "dotenv"
 class ChatService {
     @Path("/:channel")
     @GET
-    getChatHistory(@PathParam("channel") channel: string, 
-        @QueryParam("username") username: string, 
-            @QueryParam("regex") regex?: string) {
+    getChatHistory(@PathParam("channel") channel: string, @QueryParam("username") username: string, 
+            @QueryParam("regex") regex?: string, @QueryParam("limit") limit?: string, @QueryParam("skip") skip?: string) {
         
         return new Promise<any>((resolve, reject) => {
-            this.queryChatHistory(channel, username, regex).then((res) => {
+            this.queryChatHistory(channel, username, regex, limit, skip).then((res) => {
                 resolve(res as string);
             }).catch((err) => {
                 reject(new Errors.BadRequestError(err as string));
@@ -20,7 +19,7 @@ class ChatService {
         });
     }
 
-    private async queryChatHistory(channel: string, username: string, regex?: string): Promise<any> {
+    private async queryChatHistory(channel: string, username: string, regex?: string, limit?: string, skip?: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             console.log("Querying chat | channel: " + channel + ", username: " + username + ", regex: " + regex);
             let params: QueryParams = {
@@ -29,15 +28,11 @@ class ChatService {
                 userField: false
             };
     
-            if(regex) {
-                params["regex"] = regex;
-            }
+            if(regex) { params["regex"] = regex; }
+            if(limit) { params["limit"] = Number(limit); };
+            if(skip) { params["skip"] = Number(skip); }
     
             _TwitchLogger.mongo().query(params).then((res) => {
-                /*res.result.forEach((v, idx, arr) => {
-                     delete v.username; 
-                     if(idx == arr.length - 1) resolve(JSON.stringify(res));
-                });*/
                 resolve(JSON.stringify(res));
             }).catch((err) => {
                 resolve(new Errors.BadRequestError(err as string));

@@ -1,5 +1,6 @@
 {
     "debug": false,
     "channels": [ "sodapoppin", "veibae" ],
-    "dbURL": "mongodb://mongo:27017/db"
+    "dbURL": "mongodb://mongo:27017/db",
+    "maxQueryLimit": 500
 }

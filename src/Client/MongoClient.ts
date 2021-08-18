@@ -14,6 +14,8 @@ export declare interface QueryParams {
     username?: string, //optional username
     regex?: string, //optional regex filter
     userField?: boolean, //if false the username will not be included in the results
+    limit?: number, //limit number of results
+    skip?: number, //skip to given offset
 }
 
 export declare interface QueryResult {
@@ -74,6 +76,14 @@ export class MongoClient {
 
             if(params.regex) {
                 query.where("message", { "$regex": params.regex });
+            }
+
+            if(params.limit) {
+                query.limit(this.config.maxQueryLimit > params.limit ? params.limit : this.config.maxQueryLimit);
+            }
+
+            if(params.skip) {
+                query.skip(params.skip); //TODO add length checks?
             }
 
             let message_array: Message[] = [];

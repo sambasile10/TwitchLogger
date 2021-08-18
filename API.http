@@ -18,3 +18,6 @@ PUT http://localhost:8080/chat/nyanners
 
 ### Test delete channel
 DELETE http://localhost:8080/chat/sodapoppin
+
+### Test limit and skip
+GET http://localhost:8080/chat/nyanners?username=afnos_&regex=nyan&limit=20&skip=0
