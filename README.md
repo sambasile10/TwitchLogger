@@ -32,7 +32,7 @@ Other settings can be modified in `twitchconfig.json`
 
 ### Example Query with required fields
 
-`GET /chat/nyanners?username=afnos_`
+`GET /chat/nyanners?username=myusername`
 
 ### Response
 
@@ -53,7 +53,7 @@ Other settings can be modified in `twitchconfig.json`
 
 ### Example Query with all fields
 
-`GET /chat/nyanners?username=afnos_&regex=vei&limit=2&skip=5`
+`GET /chat/nyanners?username=myusername&regex=vei&limit=2&skip=5`
 
 
 ### Response
