@@ -13,6 +13,13 @@ export declare interface QueryParams {
     channel: string, //required channel
     username?: string, //optional username
     regex?: string, //optional regex filter
+    userField?: boolean, //if false the username will not be included in the results
+}
+
+export declare interface QueryResult {
+    exec_time: number, //query execution time in milliseconds
+    length: number, //number of messages in result
+    result: Message[] //query result as an array of messages
 }
 
 export class MongoClient {
@@ -51,11 +58,16 @@ export class MongoClient {
         this.enableListeners();
     }
 
-    public query(params: QueryParams): Promise<Message[]> {
-        return new Promise<Message[]>((resolve, reject) => {
+    public query(params: QueryParams): Promise<QueryResult> {
+        return new Promise<QueryResult>((resolve, reject) => {
+            let start_time = performance.now();
             let query = mongoose.model(params.channel.toLowerCase()).find();
-            query.select("username timestamp message -_id");
+            let selection: string = "username timestamp message -_id";
+            if(params.userField == false) { 
+                selection = "timestamp message -_id";
+            }
 
+            query.select(selection);
             if(params.username) {
                 query.where("username", params.username);
             }
@@ -64,14 +76,25 @@ export class MongoClient {
                 query.where("message", { "$regex": params.regex });
             }
 
-            let result: Message[] = [];
+            let message_array: Message[] = [];
+            let exec_time: number;
             query.exec().then((res) => {
-                result = JSON.parse(JSON.stringify(res));
-                this.log.debug("Found " + result.length + " results matching query");
-                resolve(result);
+                message_array = JSON.parse(JSON.stringify(res));
+                exec_time = (performance.now() - start_time);
+                this.log.debug("Found " + message_array.length + " results matching query in " + exec_time + "ms.");
+                resolve({   
+                    exec_time: exec_time,
+                    length: message_array.length,
+                    result: message_array
+                } as QueryResult);
             }).catch((err) => {
-                this.log.error("Error occured for query. Is the channel monitored? Does the user not exist? " + JSON.stringify(err));
-                resolve(result);
+                this.log.warn("Error occured for query. Is the channel monitored? Does the user not exist? Query failed in " + exec_time + "ms.");
+                exec_time = (performance.now() - start_time);
+                resolve({   
+                    exec_time: exec_time,
+                    length: message_array.length,
+                    result: message_array
+                } as QueryResult);
             });
         });
     }

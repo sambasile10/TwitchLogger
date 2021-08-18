@@ -26,6 +26,7 @@ class ChatService {
             let params: QueryParams = {
                 channel: "#" + channel,
                 username: username,
+                userField: false
             };
     
             if(regex) {
@@ -33,10 +34,11 @@ class ChatService {
             }
     
             _TwitchLogger.mongo().query(params).then((res) => {
-                res.forEach((v, idx, arr) => {
+                /*res.result.forEach((v, idx, arr) => {
                      delete v.username; 
                      if(idx == arr.length - 1) resolve(JSON.stringify(res));
-                });
+                });*/
+                resolve(JSON.stringify(res));
             }).catch((err) => {
                 resolve(new Errors.BadRequestError(err as string));
             })
