@@ -2,8 +2,6 @@
 
 Twitch Logger is a lightweight chat log powered by Typescript and Mongo that serves data via REST calls
 
-[Developed by Sam Basile](https://www.linkedin.com/in/sam-basile/)
-
 ## Deployment
 
 Either use `./start.sh` OR
