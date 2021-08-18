@@ -186,7 +186,8 @@ export class MongoClient {
                 blob.data.push({
                     channel: channel,
                     count: stats.count,
-                    size: stats.storageSize
+                    size: stats.storageSize,
+                    average_document_size: Number(stats.storageSize / stats.count)
                 });
 
                 if(index == array.length - 1) resolve(blob);
