@@ -80,16 +80,22 @@ export class TwitchLogger {
 
     addChannel(channel: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            Promise.all([
-                this.client().addChannel(channel), this.mongo().addChannel(channel)
-            ]).then(() => {
-                twitchconfig.channels.push(channel);
-                this.log.info("Added channel: " + channel);
-                resolve();
-            }).catch((err) => {
-                this.log.warn("Failed to add channel: " + channel);
-                reject(err);
-            })
+            channel = channel.toLowerCase();
+            if(twitchconfig.channels.includes(channel)) {
+                this.log.warn("Can't add channel \'" + channel + "\', it is arlready in the configuration.");
+                reject("Can't add channel \'" + channel + "\', it is arlready in the configuration.");
+            } else {
+                Promise.all([
+                    this.client().addChannel(channel), this.mongo().addChannel(channel)
+                ]).then(() => {
+                    twitchconfig.channels.push(channel);
+                    this.log.info("Added channel: " + channel);
+                    resolve();
+                }).catch((err) => {
+                    this.log.warn("Failed to add channel: " + channel);
+                    reject(err);
+                })
+            }
         });
     }
 

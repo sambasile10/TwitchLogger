@@ -181,13 +181,9 @@ export class MongoClient {
                 data: [] as any[]
             };
 
-            for(let i = 0; i < this.config.channels.length; i++) {
-
-            }
-
             let requests: number = this.config.channels.length;
             this.config.channels.forEach(async (channel, index, array) => {
-                let stats = await mongoose.model(channel).collection.stats();
+                let stats = await mongoose.model(channel.toLowerCase()).collection.stats();
                 blob.data.push({
                     channel: channel,
                     count: stats.count,
@@ -213,11 +209,12 @@ export class MongoClient {
     //TODO just drop the collection
     removeChannel(channel: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            mongoose.model(channel).deleteMany({}).then((res) => {
-                this.log.warn("Deleted all entries of model: " + channel);
+            const chnName = channel.toLowerCase();
+            mongoose.model(chnName).deleteMany({}).then((res) => {
+                this.log.warn("Deleted all entries of model: " + chnName);
                 resolve();
             }).catch((err) => {
-                this.log.error("Failed to delete entries of model: " + channel);
+                this.log.error("Failed to delete entries of model: " + chnName);
                 reject(err);
             })
         });
