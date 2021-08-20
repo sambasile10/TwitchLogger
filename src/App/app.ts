@@ -27,6 +27,10 @@ class ChatService {
                 username: username,
                 userField: false
             };
+
+            if(username == null) {
+                reject(new Errors.BadRequestError("No username was given, username is a required field."));
+            }
     
             if(regex) { params["regex"] = regex; }
             if(limit) { params["limit"] = Number(limit); };
@@ -52,7 +56,7 @@ class ChatService {
             }
 
             _TwitchLogger.addChannel(channel).then((res) => {
-                resolve("200");
+                resolve("");
             }).catch((err) => {
                 reject(new Errors.InternalServerError("Error occured while adding new channel: " + JSON.stringify(err)));
             });
@@ -71,7 +75,7 @@ class ChatService {
             }
 
             _TwitchLogger.removeChannel(channel).then(() => {
-                resolve("200"); //why 200 
+                resolve("");
             }).catch((err) => {
                 reject(new Errors.InternalServerError("Error occured while dropping collection: " + JSON.stringify(err)));
             });
