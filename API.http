@@ -1,5 +1,5 @@
 ### Get user's messages in a channel
-GET http://localhost:8080/chat/veibae?username=afnos_
+GET http://localhost:8080/chat/veibae?username=a
 
 ### Get server status
 GET http://localhost:8080/service/status
@@ -8,7 +8,7 @@ GET http://localhost:8080/service/status
 GET http://localhost:8080/service/config
 
 ### Test bad request
-GET http://localhost:8080/chat/nyanners?username=afnos_
+GET http://localhost:8080/chat/nyanners?username=a
 
 ### Test add channel
 PUT http://localhost:8080/chat/nyanners
@@ -17,10 +17,10 @@ PUT http://localhost:8080/chat/nyanners
 PUT http://localhost:8080/chat/Jerma985
 
 ###
-GET http://localhost:8080/chat/Jerma985?username=afnos_
+GET http://localhost:8080/chat/Jerma985?username=a
 
 ### Test delete channel
 DELETE http://localhost:8080/chat/sodapoppin
 
 ### Test limit and skip
-GET http://localhost:8080/chat/nyanners?username=afnos_&regex=vei&limit=5&skip=5
+GET http://localhost:8080/chat/nyanners?username=a&regex=vei&limit=5&skip=5
